@@ -14,20 +14,20 @@ class Error
             libxml_clear_errors();
         }
 
-        if ($this->useInternalErrors === null)
+        if (static::useInternalErrors !== null)
         {
-            libxml_use_internal_errors($this->useInternalErrors);
+            libxml_use_internal_errors(static::useInternalErrors);
         }
 
-        if ($this->disableEntityLoader === null)
+        if (static::disableEntityLoader !== null)
         {
-            libxml_disable_entity_loader($this->disableEntityLoader);
+            libxml_disable_entity_loader(static::disableEntityLoader);
         }
     }
 
     public static function disable()
     {
-        $this->useInternalErrors = libxml_use_internal_errors(true);
-        $this->disableEntityLoader = libxml_disable_entity_loader(true);
+        static::useInternalErrors = libxml_use_internal_errors(true);
+        static::disableEntityLoader = libxml_disable_entity_loader(true);
     }
 }
