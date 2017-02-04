@@ -1,7 +1,6 @@
 {
     "name": "gameplayjdk/refinedom",
     "description": "Simple and fast HTML parser refined.",
-    "version": "v0.1.0",
     "type": "library",
     "keywords": ["refinedom", "parser", "html", "xml"],
     "license": "MIT",
