@@ -256,7 +256,10 @@ class Document
                 throw new InvalidArgumentException(vsprintf('%1$s expects the 4th parameter to be instance of Element or DOMElement, %2$s given.', [ __METHOD__, (is_object($contextNode) ? get_class($contextNode) : gettype($contextNode)) ]));
             }
 
-            $expression = '.' . $expression;
+            if ($type === Query::TYPE_CSS)
+            {
+                $expression = '.' . $expression;
+            }
         }
 
         $nodeList = $xPath->query($expression, $contextNode);
@@ -283,7 +286,7 @@ class Document
 
     public function findIndex($expression, $index = 0, $type = Query::TYPE_CSS, $wrapElement = true, $contextNode = null)
     {
-        $result = $this->find($expression, $type, $wrapElement, $contextNode)[$index];
+        $result = $this->find($expression, $type, $wrapElement, $contextNode);
 
         if (count($result) <= $index)
         {

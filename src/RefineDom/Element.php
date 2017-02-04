@@ -119,9 +119,33 @@ class Element
         return $this->toDocument()->findIndex($expression, $index, $type, $wrapElement);
     }
 
+    public function findInDocument($expression, $type = Query::TYPE_CSS, $wrapElement = true)
+    {
+        $ownerDocument = $this->getDocument();
+
+        if ($ownerDocument === null)
+        {
+            throw new LogicException('Can not search in context without owner document.');
+        }
+
+        return $ownerDocument->find($expression, $type, $wrapElement, $this->node);
+    }
+
     public function first($expression, $type = Query::TYPE_CSS, $wrapElement = true)
     {
         return $this->toDocument()->first($expression, $type, $wrapElement);
+    }
+
+    public function firstInDocument($expression, $type = Query::TYPE_CSS, $wrapElement = true)
+    {
+        $ownerDocument = $this->getDocument();
+
+        if ($ownerDocument === null)
+        {
+            throw new LogicException('Can not search in context without owner document.');
+        }
+
+        return $ownerDocument->first($expression, $type, $wrapElement, $this->node);
     }
 
     public function xPath($expression, $wrapElement = true)
