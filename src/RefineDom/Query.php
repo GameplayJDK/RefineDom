@@ -26,13 +26,14 @@ class Query
         {
             $selector = trim($selector);
 
-            if (array_key_exists($selector, static::$compiled)) {
+            if (array_key_exists($selector, static::$compiled))
+            {
                 $paths[] = static::$compiled[$selector];
 
                 continue;
             }
 
-            static::$compiled[$selector] = static::cssToXpath($selector);
+            static::$compiled[$selector] = static::cssToXPath($selector);
 
             $paths[] = static::$compiled[$selector];
         }
@@ -42,11 +43,12 @@ class Query
         return $expression;
     }
 
-    public static function cssToXpath($selector, $prefix = '//')
+    public static function cssToXPath($selector, $prefix = '//')
     {
         $position = strrpos($selector, '::');
 
-        if ($position !== false) {
+        if ($position !== false)
+        {
             $property = substr($selector, $position + 2);
             $property = self::parseProperty($property);
             $property = self::convertProperty($property['name'], $property['args']);
@@ -54,7 +56,8 @@ class Query
             $selector = substr($selector, 0, $position);
         }
 
-        if (substr($selector, 0, 1) === '>') {
+        if (substr($selector, 0, 1) === '>')
+        {
             $prefix = '/';
 
             $selector = ltrim($selector, '> ');
@@ -65,11 +68,11 @@ class Query
 
         while (count($segments) > 0)
         {
-            $xPath = $xPath . self::buildXpath($segments, $prefix);
+            $xPath .= self::buildXPath($segments, $prefix);
 
             $selector = substr($selector, strlen($segments['selector']));
             $selector = trim($selector);
-            $prefix = isset($segments['rel']) ? '/' : '//';
+            $prefix   = isset($segments['rel']) ? '/' : '//';
 
             if ($selector === '')
             {
@@ -91,10 +94,9 @@ class Query
     {
         $namePattern = '(?P<name>[\w\-]*)';
         $argsPattern = '(?:\((?P<args>[^\)]+)\))';
-        $regexp = '/(?:'.$namePattern.$argsPattern.'?)?/is';
+        $regexp = '/(?:' . $namePattern . $argsPattern . '?)?/is';
 
-        if (preg_match($regexp, $property, $segments))
-        {
+        if (preg_match($regexp, $property, $segments)) {
             $result = [];
 
             $result['name'] = $segments['name'];
@@ -128,7 +130,7 @@ class Query
         throw new RuntimeException('Invalid selector: Unknown property type.');
     }
 
-    public static function buildXpath($segments, $prefix = '//')
+    public static function buildXPath($segments, $prefix = '//')
     {
         $tagName = isset($segments['tag']) ? $segments['tag'] : '*';
 
@@ -157,14 +159,14 @@ class Query
 
         if (isset($segments['pseudo']))
         {
-            $expression = isset($segments['expr']) ? trim($segments['expr']) : '';
+            $expression   = isset($segments['expr']) ? trim($segments['expr']) : '';
 
             $parameters = explode(',', $expression);
 
             $attributes[] = self::convertPseudo($segments['pseudo'], $parameters, $tagName);
         }
 
-        if (count($attributes) === 0 && !isset($segments['tag']))
+        if (count($attributes) === 0 and !isset($segments['tag']))
         {
             throw new InvalidArgumentException('Segments should contain the tag name or at least one attribute.');
         }
@@ -173,7 +175,7 @@ class Query
 
         if ($count = count($attributes))
         {
-            $xPath = $xPath . ($count > 1) ? vsprintf('[(%1$s)]', [ implode(') and (', $attributes) ]) : vsprintf('[%1$s]', [ $attributes[0] ]);
+            $xPath = $xPath . (($count > 1) ? vsprintf('[(%1$s)]', [ implode(') and (', $attributes) ]) : vsprintf('[%1$s]', [ $attributes[0] ]));
         }
 
         return $xPath;
@@ -186,14 +188,14 @@ class Query
 
         if ($isSimpleSelector)
         {
-            $xPath = ($value === null) ? '@' . $name : vsprintf('@%1$s="%2$s"', [ $name, $value ]);
+            $xPath = ($value === null) ? ('@' . $name) : vsprintf('@%1$s="%2$s"', [ $name, $value ]);
 
             return $xPath;
         }
 
         if (substr($name, 0, 1) === '^')
         {
-            $xPath = sprintf('@*[starts-with(name(), "%s")]', substr($name, 1));
+            $xPath = vsprintf('@*[starts-with(name(), "%1$s")]', [ substr($name, 1) ]);
 
             return ($value === null) ? $xPath : vsprintf('%1$s="%2$s"', [ $xPath, $value ]);
         }
@@ -238,7 +240,7 @@ class Query
                 return 'position() = last()';
                 break;
             case 'nth-child':
-                $xPath = vsprintf('(name()="%1$s") and (%2$s)', $tagName, self::convertNthExpression($parameters[0]));
+                $xPath = vsprintf('(name()="%1$s") and (%2$s)', [ $tagName, self::convertNthExpression($parameters[0]) ]);
                 $tagName = '*';
 
                 return $xPath;
@@ -250,10 +252,10 @@ class Query
                 return self::convertContains($string, $caseSensetive);
                 break;
             case 'has':
-                return self::cssToXpath($parameters[0], './/');
+                return self::cssToXPath($parameters[0], './/');
                 break;
             case 'not':
-                return vsprintf('not(self::%1$s)', [ self::cssToXpath($parameters[0], '') ]);
+                return vsprintf('not(self::%1$s)', [ self::cssToXPath($parameters[0], '') ]);
                 break;
             case 'nth-of-type':
                 return self::convertNthExpression($parameters[0]);
@@ -266,7 +268,7 @@ class Query
                 break;
         }
 
-        throw new RuntimeException(vsprintf('Invalid selector: Unknown pseudo-class "%1$s".', [ $pseudo ]));
+        throw new RuntimeException(vsprintf('Invalid selector: Unknown pseudo-class "%1$s"', [ $pseudo ]));
     }
 
     protected static function convertNthExpression($expression)
@@ -299,7 +301,7 @@ class Query
                 $sign = (isset($segments['sign']) && $segments['sign'] === '+') ? '-' : '+';
                 $position = isset($segments['pos']) ? $segments['pos'] : 0;
 
-                return vsprintf('(position() %1$s %2$d) mod %3$d = 0 and position() >= %4$d', $sign, $position, $multiplier, $position);
+                return vsprintf('(position() %1$s %2$d) mod %3$d = 0 and position() >= %4$d', [ $sign, $position, $multiplier, $position ]);
             }
         }
 
@@ -310,16 +312,16 @@ class Query
     {
         if ($caseSensetive)
         {
-            return vsprintf('text() = "%s"', [ $string ]);
+            return vsprintf('text() = "%1$s"', [ $string ]);
         }
 
         if (function_exists('mb_strtolower'))
         {
-            return vsprintf('php:functionString("mb_strtolower", .) = php:functionString("mb_strtolower", "%s")', [ $string ]);
+            return vsprintf('php:functionString("mb_strtolower", .) = php:functionString("mb_strtolower", "%1$s")', [ $string ]);
         }
         else
         {
-            return vsprintf('php:functionString("strtolower", .) = php:functionString("strtolower", "%s")', [ $string ]);
+            return vsprintf('php:functionString("strtolower", .) = php:functionString("strtolower", "%1$s")', [ $string ]);
         }
     }
 
@@ -339,9 +341,9 @@ class Query
         $pseudoNamePattern = '(?P<pseudo>[\w\-]+)';
         $pseudoExprPattern = '(?:\((?P<expr>[^\)]+)\))';
         $pseudoPattern = '(?::' . $pseudoNamePattern . $pseudoExprPattern . '?)?';
-        $relPatern = '\s*(?P<rel>>)?';
+        $relPattern = '\s*(?P<rel>>)?';
 
-        $regexp = '/' . $tagPattern . $idPattern . $classesPattern . $attrsPattern . $pseudoPattern . $relPatern . '/is';
+        $regexp = '/' . $tagPattern . $idPattern . $classesPattern . $attrsPattern . $pseudoPattern . $relPattern . '/is';
 
         if (preg_match($regexp, $selector, $segments))
         {
@@ -352,11 +354,12 @@ class Query
 
             $result['selector'] = $segments[0];
 
-            if (isset($segments['tag']) && $segments['tag'] !== '') {
+            if (isset($segments['tag']) && $segments['tag'] !== '')
+            {
                 $result['tag'] = $segments['tag'];
             }
 
-            if (isset($segments['id']) and $segments['id'] !== '')
+            if (isset($segments['id']) && $segments['id'] !== '')
             {
                 $result['id'] = $segments['id'];
             }
@@ -368,7 +371,8 @@ class Query
 
                 foreach ($attributes as $attribute)
                 {
-                    if ($attribute !== '') {
+                    if ($attribute !== '')
+                    {
                         list($name, $value) = array_pad(explode('=', $attribute, 2), 2, null);
 
                         if ($name === '')
@@ -423,7 +427,8 @@ class Query
 
     public static function setCompiled($compiled)
     {
-        if (!is_array($compiled)) {
+        if (!is_array($compiled))
+        {
             throw new InvalidArgumentException(vsprintf('%1$s expects the 1st parameter to be array, %2$s given.', [ __METHOD__, gettype($compiled) ]));
         }
 
