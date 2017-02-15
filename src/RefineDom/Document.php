@@ -9,7 +9,6 @@ use DOMXPath;
 
 use InvalidArgumentException;
 use RuntimeException;
-use OutOfBoundsException;
 
 class Document
 {
@@ -290,7 +289,7 @@ class Document
 
         if (count($result) <= $index)
         {
-            throw new OutOfBoundsException(vsprintf('Given index %1$d exceeds size of array.', [ $index ]));
+            return null;
         }
 
         return $result[$index];
@@ -340,7 +339,7 @@ class Document
 
         if (count($result) <= $index)
         {
-            throw new OutOfBoundsException(vsprintf('Given index %1$d exceeds size of array.', [ $index ]));
+            return null;
         }
 
         return $result[$index];

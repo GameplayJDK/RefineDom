@@ -180,6 +180,17 @@ because in the first case it makes two requests.
 
 Note that expressions are cached thougth. See the [working with cache](#working-with-cache) section for details.
 
+This check also works with `findIndex` (and also `xPathIndex`):
+
+```php
+if (($element = $document->findIndex('.post', 3)) !== null)
+{
+    // code
+}
+```
+
+which retun `null` when the element at index does not exist.
+
 ## Supported selectors
 
 RefineDom supports search by:
