@@ -287,6 +287,11 @@ class Document
     {
         $result = $this->find($expression, $type, $wrapElement, $contextNode);
 
+        if (!is_integer($index))
+        {
+            throw new InvalidArgumentException(vsprintf('%1$s expects the 2st parameter to be integer, %2$s given.', [ __METHOD__, gettype($index) ]));
+        }
+
         if (count($result) <= $index)
         {
             return null;
@@ -336,6 +341,11 @@ class Document
     public function xPathIndex($expression, $index = 0, $wrapElement = true, $contextNode = null)
     {
         $result = $this->xPath($expression, $wrapElement, $contextNode);
+
+        if (!is_integer($index))
+        {
+            throw new InvalidArgumentException(vsprintf('%1$s expects the 2st parameter to be integer, %2$s given.', [ __METHOD__, gettype($index) ]));
+        }
 
         if (count($result) <= $index)
         {
